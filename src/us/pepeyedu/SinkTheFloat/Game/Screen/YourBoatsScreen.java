@@ -14,6 +14,8 @@ import us.pepeyedu.SinkTheFloat.Game.Objects.Boats.Fragata;
 import us.pepeyedu.SinkTheFloat.Game.Objects.Boats.Portaaviones;
 import us.pepeyedu.SinkTheFloat.Game.Objects.Boats.Submarino;
 import us.pepeyedu.SinkTheFloat.Game.Objects.Screen.Button;
+import us.pepeyedu.SinkTheFloat.Game.Objects.Screen.ImageButton;
+import us.pepeyedu.SinkTheFloat.Game.Objects.Screen.TextButton;
 import us.pepeyedu.SinkTheFloat.Textures.TexturePath;
 import us.pepeyedu.SinkTheFloat.Utils.GameLocation;
 import us.pepeyedu.SinkTheFloat.Utils.GameObject;
@@ -94,16 +96,7 @@ public class YourBoatsScreen extends Screen {
 				}
 			}
 			@Override
-			public void onClick(MouseButtons mouseButton) {
-				for (GameObject object : getGameObjects()) {
-					if (object instanceof Button) {
-						Button button = (Button) object;
-						if (button.isShow() && button.isOver()) {
-							button.onClick();
-						}
-					}
-				}
-			}
+			public void onClick(MouseButtons mouseButton) {}
 			@Override
 			public void onWheelMoved(MouseButtons mouseButton) {
 				if (System.currentTimeMillis() - lastRoating >= 150) {
@@ -115,6 +108,17 @@ public class YourBoatsScreen extends Screen {
 						if (selectedBoat != null) {
 							selectedBoat.rotate(selectedBoat.getRotation().getPrevious());
 						}
+					}
+					GameLocation mouseLocation = new GameLocation(getMouseInput().getX(), getMouseInput().getY());
+					// g.drawRect(900, 500, 230, 230);
+					if (mouseLocation.getX() >= 900 && mouseLocation.getX() <= 1130 && mouseLocation.getY() >= 500 && mouseLocation.getY() <= 730) {
+						if (mouseButton.equals(MouseButtons.WHEEL_UP)) {
+							System.out.println(getGame().getAllEmotes().size() / 4);
+							getGame().setEmoteLineSelected(((getGame().getEmoteLineSelected() + 1) * 4 >= getGame().getAllEmotes().size() ? getGame().getEmoteLineSelected() : getGame().getEmoteLineSelected() + 1));
+						} else if (mouseButton.equals(MouseButtons.WHEEL_DOWN)) {
+							getGame().setEmoteLineSelected((getGame().getEmoteLineSelected() - 1 <= 0 ? 0 : getGame().getEmoteLineSelected() - 1));
+						}
+						updateEmotePage();
 					}
 					lastRoating = System.currentTimeMillis();
 				}
@@ -211,8 +215,8 @@ public class YourBoatsScreen extends Screen {
 						}
 					}
 					for (GameObject object : getGameObjects()) {
-						if (object instanceof Button) {
-							Button button = (Button) object;
+						if (object instanceof TextButton) {
+							TextButton button = (TextButton) object;
 							if (button.getText().equals("Siguiente")) {
 								if (boatOutOfTable == 0) {
 									button.setShow(true);
@@ -229,6 +233,14 @@ public class YourBoatsScreen extends Screen {
 					}
 					System.out.println("boat desel");
 				}
+				for (GameObject object : getGameObjects()) {
+					if (object instanceof Button) {
+						Button button = (Button) object;
+						if (button.isShow() && button.isOver()) {
+							button.onClick();
+						}
+					}
+				}			
 			}
 		});
 		setKeyInput(new KeyInput() {
@@ -239,7 +251,7 @@ public class YourBoatsScreen extends Screen {
 			@Override
 			public void onKeyReleased(int key) {}			
 		});
-		Button button = new Button("Siguiente", new GameLocation(900, 600), getGame(), new ObjectDimension(250, 100)) {
+		Button button = new TextButton("Siguiente", "next", new GameLocation(900, 600), getGame(), new ObjectDimension(250, 100)) {
 			@Override
 			public void onClick() {
 				TransactionScreen ts = (TransactionScreen) getGame().getScreenManager().getScreen("transaction");
@@ -253,12 +265,53 @@ public class YourBoatsScreen extends Screen {
 		};
 		button.setShow(false);
 		addGameObject(button);
+		addGameObject(new ImageButton("...", "emotes", TexturePath.BOCADILLO, new GameLocation(1000, 650), getGame(), new ObjectDimension(50, 50)) {
+			@Override
+			public void onClick() {
+				System.out.println("sda");
+				new Thread() {
+					@Override
+					public void run() {
+						try {
+							sleep(50);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						getGame().setShowEmotePage(true);
+						showEmotes(true);
+					}
+				}.start();
+			}
+			@Override
+			public void onOver() {}			
+		});
+		int size = 0;
+		for (int ii = 0; ii < 4; ii++) {
+			for (int i = 0; i < 4; i++) {
+				size++;
+				int selected = ii + (i * 4) + 1 + (getGame().getEmoteLineSelected() * 4);
+				if (getGame().getAllEmotes().size()-1 >= selected) {
+					addGameObject(new ImageButton("emotebutton-" + size, getGame().getAllEmotes().get(selected), new GameLocation(910 + (55 * ii), 510 + (55 * i)), getGame(), new ObjectDimension(50, 50)) {
+						@Override
+						public void onClick() {
+							getGame().getGameData().getMachineLogic().addEmote(getTexturePath(), PlayerType.YOU);
+							getGame().setEmoteLineSelected(0);
+							getGame().setShowEmotePage(false);
+							showEmotes(false);
+						}
+						@Override
+						public void onOver() {}
+					});
+				}
+			}
+		}
 	}
 	@Override
 	public void onOpen() {
 		attacked = false;
 		timeToAttack = 60;
 		timer = 60 * getGame().getMaxTPS();
+		showEmotes(getGame().isShowEmotePage());
 	}
 	private int timer = 60 * getGame().getMaxTPS();
 	private String abc = "ABCDEFGHIJ"; // caracteres que se mostraran en la tabla
@@ -284,6 +337,11 @@ public class YourBoatsScreen extends Screen {
 			g.drawString("Barcos vivos: " + getGame().getGameData().getAlivedBoats(), 30, 700);
 		}
 		showMessage(alertMessage, g);
+		for (PlayerType pType : PlayerType.values()) {
+			if (getGame().getGameData().getMachineLogic().hasEmote(pType)) {
+				getGame().getGameData().getMachineLogic().getEmote(pType).render(g);
+			}
+		}
 	}
 	private void showMessage(int id, Graphics g) {
 		if (id == 1) {
@@ -352,6 +410,11 @@ public class YourBoatsScreen extends Screen {
 				}
 			}
 		}
+		for (PlayerType pType : PlayerType.values()) {
+			if (getGame().getGameData().getMachineLogic().hasEmote(pType)) {
+				getGame().getGameData().getMachineLogic().getEmote(pType).tick();
+			}
+		}
 	}
 	private void showTime(Graphics g) {
 		int alertTime = timer/getGame().getMaxTPS();
@@ -385,8 +448,8 @@ public class YourBoatsScreen extends Screen {
 		restartObjects(Boat.class);
 		restartObjects(RectangleScreenObject.class);
 		for (GameObject object : getGameObjects()) {
-			if (object instanceof Button) {
-				Button button = (Button) object;
+			if (object instanceof TextButton) {
+				TextButton button = (TextButton) object;
 				if (button.getText().equals("Siguiente")) {
 					button.setShow(false);
 				}
@@ -416,6 +479,10 @@ public class YourBoatsScreen extends Screen {
 		}
 		addGameObject(new Portaaviones(new GameLocation(175, 250), getGame()));
 		getGame().getGameData().getAlivedBoats(PlayerType.YOU);
+		getGame().getGameData().getMachineLogic().addEmote(TexturePath.EMOTE_CACA, PlayerType.ENEMY);
+		getGame().getGameData().getMachineLogic().addEmote(TexturePath.EMOTE_CALABAZA, PlayerType.ENEMY);
+		getGame().getGameData().getMachineLogic().addEmote(TexturePath.EMOTE_DEMONIO, PlayerType.ENEMY);
+		showEmotes(false);
 	}
 	public boolean isOnTable(int x, int y) {
 		return x >= 0 && x <= getMatriz().length-1 && y >= 0 && y <= getMatriz().length-1;
@@ -443,5 +510,49 @@ public class YourBoatsScreen extends Screen {
 		transactionTime = System.currentTimeMillis() + 4000;
 		alertMessage = 4;
 		attacked = true;
+	}
+	public Button getButton(String name) {
+		for (GameObject button : getGameObjects()) {
+			if (button instanceof Button) {
+				Button b = (Button) button;
+				if (b.getName().equals(name)) {
+					return b;
+				}
+			}
+		}
+		return null;
+	}
+	public void showEmotes(boolean show) {
+		for (GameObject button : getGameObjects()) {
+			if (button instanceof Button) {
+				Button b = (Button) button;
+				if (b.getName().equals("emotes")) {
+					b.setShow(!show);
+				} else if (b.getName().contains("emotebutton-")) {
+					b.setShow(show);
+				}
+			}
+		}
+		updateEmotePage();
+	}
+	public void updateEmotePage() {
+		int size = 0;
+		for (int ii = 0; ii < 4; ii++) {
+			for (int i = 0; i < 4; i++) {
+				size++;
+				int selected = ii + (i * 4) + 1 + (getGame().getEmoteLineSelected() * 4);
+				ImageButton button = (ImageButton) getButton("emotebutton-" + size);
+				if (button != null) {
+					if (getGame().getAllEmotes().size()-1 >= selected) {
+						button.setShow(true && getGame().isShowEmotePage());
+						button.setTexture(getGame().getAllEmotes().get(selected));
+					} else {
+						button.setShow(false);
+					}
+				} else {
+
+				}
+			}
+		}
 	}
 }

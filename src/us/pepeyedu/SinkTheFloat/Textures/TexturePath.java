@@ -1,6 +1,29 @@
 package us.pepeyedu.SinkTheFloat.Textures;
 
 public enum TexturePath {
+	BOCADILLO("Bocadillo", "images/Emotes/bocadillo.png", false, true),
+	EMOTE_ALIEN("Emote alien", "images/Emotes/emote_alien.png", false, true),
+	EMOTE_ANGEL("Emote angel", "images/Emotes/emote_angel.png", false, true),
+	EMOTE_BESO("Emote beso", "images/Emotes/emote_beso.png", false, true),
+	EMOTE_DEMONIO("Emote demonio", "images/Emotes/emote_demonio.png", false, true),
+	EMOTE_FANTASMA("Emote fantasma", "images/Emotes/emote_fantasma.png", false, true),
+	EMOTE_GAFAS("Emote gafas", "images/Emotes/emote_gafas.png", false, true),
+	EMOTE_LLORANDO("Emote llorando", "images/Emotes/emote_llorando.png", false, true),
+	EMOTE_MUERTO("Emote muerto", "images/Emotes/emote_muerto.png", false, true),
+	EMOTE_PAYASO("Emote payaso", "images/Emotes/emote_payaso.png", false, true),
+	EMOTE_RISA("Emote risa", "images/Emotes/emote_risa.png", false, true),
+	EMOTE_CACA("Emote caca", "images/Emotes/emote_caca.png", false, true),
+	EMOTE_MOLESTO("Emote molesto", "images/Emotes/emote_molesto.png", false, true),
+	EMOTE_CALLADO("Emote callado", "images/Emotes/emote_callado.png", false, true),
+	EMOTE_GUINO("Emote guino", "images/Emotes/emote_guino.png", false, true),
+	EMOTE_MUCHARISA("Emote mucharisa", "images/Emotes/emote_mucharisa.png", false, true),
+	EMOTE_MAJO("Emote majo", "images/Emotes/emote_majo.png", false, true),
+	EMOTE_VERGONZOSO("Emote vergonzoso", "images/Emotes/emote_vergonzoso.png", false, true),
+	EMOTE_FELIZ("Emote feliz", "images/Emotes/emote_feliz.png", false, true),
+	EMOTE_MUERTE("Emote muerte", "images/Emotes/emote_muerte.png", false, true),
+	EMOTE_VIRUS("Emote virus", "images/Emotes/emote_virus.png", false, true),
+	EMOTE_ROBOT("Emote robot", "images/Emotes/emote_robot.png", false, true),
+	EMOTE_CALABAZA("Emote calabaza", "images/Emotes/emote_calabaza.png", false, true),
 	WATER("Agua", "images/Agua.png"),
 	DESCTRUCTOR("Destructor", "images/Boats/Destructor.png", true),
 	DESCTRUCTOR1("Destructor1", "images/Boats/Destructor1.png", true),
@@ -27,16 +50,22 @@ public enum TexturePath {
 	private String name; 
 	private String path;
 	private boolean isBoat;
+	private boolean isEmote;
 	
 	TexturePath(String name, String path) {
 		this.name = name;
 		this.path = path;
 	}
-	
 	TexturePath(String name, String path, boolean isBoat) {
 		this.name = name;
 		this.path = path;
 		this.isBoat = isBoat;
+	}	
+	TexturePath(String name, String path, boolean isBoat, boolean isEmote) {
+		this.name = name;
+		this.path = path;
+		this.isBoat = isBoat;
+		this.isEmote = isEmote;
 	}
 	public String getName() {
 		return name;
@@ -46,5 +75,8 @@ public enum TexturePath {
 	}
 	public boolean isBoat() {
 		return isBoat;
+	}
+	public boolean isEmote() {
+		return isEmote;
 	}
 }

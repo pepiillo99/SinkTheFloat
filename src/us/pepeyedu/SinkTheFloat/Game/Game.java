@@ -3,13 +3,16 @@ package us.pepeyedu.SinkTheFloat.Game;
 import java.awt.Canvas;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import us.pepeyedu.SinkTheFloat.Game.Screen.AttackScreen;
 import us.pepeyedu.SinkTheFloat.Game.Screen.Screen;
 import us.pepeyedu.SinkTheFloat.Game.Screen.ScreenManager;
 import us.pepeyedu.SinkTheFloat.Game.Screen.YourBoatsScreen;
+import us.pepeyedu.SinkTheFloat.Textures.TexturePath;
 import us.pepeyedu.SinkTheFloat.Utils.GameAudio;
 import us.pepeyedu.SinkTheFloat.Utils.GameObject;
 import us.pepeyedu.SinkTheFloat.Windows.Windows;
@@ -27,11 +30,35 @@ public class Game extends Canvas implements Runnable {
 	private int fps = 1;
 	private GameData gameData;
 	private GameAudio soundtrack;
+	private List<TexturePath> allEmotes = new ArrayList<TexturePath>();
+	private int emoteLineSelected = 0;
+	private boolean showEmotePage = false;
 	public Game() {
 		windows = new Windows("SinkTheFloat", 1200, 800, this);
 		screenManager = new ScreenManager(this);
 		setScreen("loading");
 		start();
+		for (TexturePath tp : TexturePath.values()) {
+			if (!tp.equals(TexturePath.BOCADILLO) && tp.isEmote()) {
+				allEmotes.add(tp);
+			}
+		}
+	}
+	public List<TexturePath> getAllEmotes() {
+		return allEmotes;
+	}
+	public boolean isShowEmotePage() {
+		return showEmotePage;
+	}
+	public void setShowEmotePage(boolean showEmotePage) {
+		this.showEmotePage = showEmotePage;
+	}
+	public int getEmoteLineSelected() {
+		return emoteLineSelected;
+	}
+	public void setEmoteLineSelected(int emoteLineSelected) {
+		this.emoteLineSelected = emoteLineSelected;
+		System.out.println(emoteLineSelected);
 	}
 	public void start() {
 		windows.setVisible();

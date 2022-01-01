@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import us.pepeyedu.SinkTheFloat.SinkTheFloat;
 import us.pepeyedu.SinkTheFloat.Game.Game;
 import us.pepeyedu.SinkTheFloat.Game.Objects.Screen.Button;
+import us.pepeyedu.SinkTheFloat.Game.Objects.Screen.TextButton;
 import us.pepeyedu.SinkTheFloat.Textures.TexturePath;
 import us.pepeyedu.SinkTheFloat.Utils.GameLocation;
 import us.pepeyedu.SinkTheFloat.Utils.GameObject;
@@ -63,7 +64,7 @@ public class MainScreen extends Screen {
 				
 			}			
 		});
-		addGameObject(new Button("Jugar", new GameLocation(50, 600), game, new ObjectDimension(200, 70)) {
+		addGameObject(new TextButton("Jugar", "play", new GameLocation(50, 600), game, new ObjectDimension(200, 70)) {
 			@Override
 			public void onClick() {
 				getGame().newGame();
@@ -75,10 +76,21 @@ public class MainScreen extends Screen {
 				
 			}			
 		});
-		addGameObject(new Button("Reglas", new GameLocation(930, 600), game, new ObjectDimension(200, 70)) {
+		addGameObject(new TextButton("Reglas", "rules", new GameLocation(475, 600), game, new ObjectDimension(200, 70)) {
 			@Override
 			public void onClick() {
 				getGame().setScreen("rules");
+			}
+			@Override
+			public void onOver() {
+				// TODO Auto-generated method stub
+				
+			}			
+		});
+		addGameObject(new TextButton("Opciones", "options", new GameLocation(920, 600), game, new ObjectDimension(220, 70)) {
+			@Override
+			public void onClick() {
+				
 			}
 			@Override
 			public void onOver() {

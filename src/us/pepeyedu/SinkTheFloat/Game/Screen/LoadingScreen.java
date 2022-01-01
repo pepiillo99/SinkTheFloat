@@ -55,6 +55,13 @@ public class LoadingScreen extends Screen {
 								changeColor(Color.BLACK, Color.RED);
 							}				
 						});
+					} else if (tp.isEmote()) {
+						tex.createTextureChanged("unnOver", new TextureChanged() {
+							@Override
+							public void change() {
+								changeImageAlpha(0.75f);
+							}							
+						});
 					}
 					tex.load(new Callback<Boolean>() {
 						@Override

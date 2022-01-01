@@ -8,6 +8,7 @@ import java.awt.Rectangle;
 import us.pepeyedu.SinkTheFloat.SinkTheFloat;
 import us.pepeyedu.SinkTheFloat.Game.Game;
 import us.pepeyedu.SinkTheFloat.Game.Objects.Screen.Button;
+import us.pepeyedu.SinkTheFloat.Game.Objects.Screen.TextButton;
 import us.pepeyedu.SinkTheFloat.Textures.TexturePath;
 import us.pepeyedu.SinkTheFloat.Utils.GameLocation;
 import us.pepeyedu.SinkTheFloat.Utils.GameObject;
@@ -67,7 +68,7 @@ public class RulesScreen extends Screen {
 				
 			}			
 		});
-		addGameObject(new Button("Volver", new GameLocation(50, 650), game, new ObjectDimension(200, 70)) {
+		addGameObject(new TextButton("Volver", "back", new GameLocation(50, 650), game, new ObjectDimension(200, 70)) {
 			@Override
 			public void onClick() {
 				getGame().setScreen("main");

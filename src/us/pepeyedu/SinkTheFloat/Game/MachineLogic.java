@@ -1,10 +1,13 @@
 package us.pepeyedu.SinkTheFloat.Game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import us.pepeyedu.SinkTheFloat.SinkTheFloat;
 import us.pepeyedu.SinkTheFloat.Game.Animations.Animation;
+import us.pepeyedu.SinkTheFloat.Game.Emote.Emote;
+import us.pepeyedu.SinkTheFloat.Game.Emote.EmoteCategory;
 import us.pepeyedu.SinkTheFloat.Game.Objects.RectangleScreenObject;
 import us.pepeyedu.SinkTheFloat.Game.Objects.Boats.Boat;
 import us.pepeyedu.SinkTheFloat.Game.Screen.AttackScreen;
@@ -28,6 +31,8 @@ public class MachineLogic {
 	private Game game;
 	private int followAttacks = 0;
 	private GameLocation lastAttack;
+	private HashMap<PlayerType, Emote> emotes = new HashMap<PlayerType, Emote>();
+	private HashMap<PlayerType, List<Emote>> queuedEmotes = new HashMap<PlayerType, List<Emote>>();
 	public MachineLogic(Game game) {
 		this.game = game;
 	}
@@ -43,6 +48,19 @@ public class MachineLogic {
 			AttackScreen ats = (AttackScreen) screen;
 			ats.attackLosed();
 		}
+		if (playerType.equals(PlayerType.YOU)) {
+			if (Utils.random.nextBoolean()) {
+				addEmote(EmoteCategory.PRESUMIR.getRandom(), PlayerType.ENEMY);
+			} else {
+				addEmote(EmoteCategory.REIR.getRandom(), PlayerType.ENEMY);
+			}
+		} else if (playerType.equals(PlayerType.ENEMY)) {
+			if (Utils.random.nextBoolean()) {
+				addEmote(EmoteCategory.LLORAR.getRandom(), PlayerType.ENEMY);
+			} else {
+				addEmote(EmoteCategory.ENFADADO.getRandom(), PlayerType.ENEMY);
+			}
+		}
 	}
 	public void onAttack(PlayerType playerType, Screen screen) {
 		if (screen instanceof YourBoatsScreen) {
@@ -56,6 +74,19 @@ public class MachineLogic {
 			@Override
 			public void onFinish() {}				
 		};
+		if (playerType.equals(PlayerType.YOU)) {
+			if (Utils.random.nextBoolean()) {
+				addEmote(EmoteCategory.LLORAR.getRandom(), PlayerType.ENEMY);
+			} else {
+				addEmote(EmoteCategory.ENFADADO.getRandom(), PlayerType.ENEMY);
+			}
+		} else if (playerType.equals(PlayerType.ENEMY)) {
+			if (Utils.random.nextBoolean()) {
+				addEmote(EmoteCategory.PRESUMIR.getRandom(), PlayerType.ENEMY);
+			} else {
+				addEmote(EmoteCategory.REIR.getRandom(), PlayerType.ENEMY);
+			}
+		}
 	}
 	public void onSink(PlayerType playerType, Boat boat, Screen screen, RectangleScreenObject rObject) {
 		TextureManager tm = SinkTheFloat.getInstance().getTextureManager();
@@ -106,7 +137,20 @@ public class MachineLogic {
 					}
 				}
 			}
-		}	
+		}
+		if (playerType.equals(PlayerType.YOU)) {
+			if (Utils.random.nextBoolean()) {
+				addEmote(EmoteCategory.LLORAR.getRandom(), PlayerType.ENEMY);
+			} else {
+				addEmote(EmoteCategory.ENFADADO.getRandom(), PlayerType.ENEMY);
+			}
+		} else if (playerType.equals(PlayerType.ENEMY)) {
+			if (Utils.random.nextBoolean()) {
+				addEmote(EmoteCategory.PRESUMIR.getRandom(), PlayerType.ENEMY);
+			} else {
+				addEmote(EmoteCategory.REIR.getRandom(), PlayerType.ENEMY);
+			}
+		}
 	}
 	public void executeAttack() {
 		Screen screen = game.getScreen();
@@ -238,5 +282,35 @@ public class MachineLogic {
 			}
 		}
 		return true;
+	}
+	public boolean hasEmote(PlayerType pType) {
+		return emotes.containsKey(pType);
+	}
+	public Emote getEmote(PlayerType pType) {
+		return emotes.get(pType);
+	}
+	public int countPendenting(PlayerType pType) {
+		if (queuedEmotes.containsKey(pType)) {
+			return queuedEmotes.get(pType).size();
+		}
+		return 0;
+	}
+	public void addEmote(TexturePath texturePath, PlayerType pType) {
+		if (hasEmote(pType)) {
+			getEmote(pType).runToFinish();
+			if (!queuedEmotes.containsKey(pType)) {
+				queuedEmotes.put(pType, new ArrayList<Emote>());
+			}
+			queuedEmotes.get(pType).add(new Emote(texturePath, pType));
+		} else {
+			emotes.put(pType, new Emote(texturePath, pType));
+		}
+	}
+	public void finishedEmote(PlayerType pType) {
+		emotes.remove(pType);
+		if (queuedEmotes.containsKey(pType) && !queuedEmotes.get(pType).isEmpty()) {
+			emotes.put(pType, queuedEmotes.get(pType).get(0));
+			queuedEmotes.get(pType).remove(0);
+		}
 	}
 }

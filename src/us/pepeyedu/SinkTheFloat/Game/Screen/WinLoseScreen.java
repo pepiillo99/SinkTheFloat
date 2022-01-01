@@ -8,6 +8,7 @@ import java.awt.Rectangle;
 import us.pepeyedu.SinkTheFloat.SinkTheFloat;
 import us.pepeyedu.SinkTheFloat.Game.Game;
 import us.pepeyedu.SinkTheFloat.Game.Objects.Screen.Button;
+import us.pepeyedu.SinkTheFloat.Game.Objects.Screen.TextButton;
 import us.pepeyedu.SinkTheFloat.Textures.TexturePath;
 import us.pepeyedu.SinkTheFloat.Utils.GameLocation;
 import us.pepeyedu.SinkTheFloat.Utils.GameObject;
@@ -50,7 +51,7 @@ public class WinLoseScreen extends Screen {
 				
 			}			
 		});
-		addGameObject(new Button("Volver", new GameLocation(50, 650), game, new ObjectDimension(200, 70)) {
+		addGameObject(new TextButton("Volver", "back", new GameLocation(50, 650), game, new ObjectDimension(200, 70)) {
 			@Override
 			public void onClick() {
 				getGame().setScreen("main");
@@ -64,14 +65,23 @@ public class WinLoseScreen extends Screen {
 	}
 
 	@Override
-	public void internalTick() {}
-
+	public void internalTick() {
+		for (PlayerType pType : PlayerType.values()) {
+			if (getGame().getGameData().getMachineLogic().hasEmote(pType)) {
+				getGame().getGameData().getMachineLogic().getEmote(pType).tick();
+			}
+		}
+	}
 	@Override
 	protected void paintLevel(Graphics g) {
 		Rectangle rec = new Rectangle(((getGame().getWindows().getX()/2)-125), (getGame().getWindows().getY()/2)-100, 250, 50);		
 		g.drawImage(SinkTheFloat.getInstance().getTextureManager().getTexture(TexturePath.FONDO).getTexture(), 0, 0, 1200, 800, null, null);
 		g.setColor(new Color(255, 255, 255, 255));
 		Utils.drawCenteredString(g, "¡Has " + (getGame().getGameData().getWinner() == PlayerType.YOU ? "ganado" : "perdido") + "!", rec, SinkTheFloat.getInstance().getFontManager().getFont("Airborne").deriveFont(Font.PLAIN, 100)); 
+		for (PlayerType pType : PlayerType.values()) {
+			if (getGame().getGameData().getMachineLogic().hasEmote(pType)) {
+				getGame().getGameData().getMachineLogic().getEmote(pType).render(g);
+			}
+		}
 	}
-
 }
